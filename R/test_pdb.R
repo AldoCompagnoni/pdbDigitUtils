@@ -1,12 +1,146 @@
 #' Test a newly entered model
 #' 
 #' @param pdb The padrino database object
-#' @param ipm_id The \code{ipm_id} you wish to test
+#' @param id The \code{ipm_id} you wish to test
 #'
-#' @return Either a list of errors and warnings, or a newly built IPM object.
+#' @return Either a data frame of errors and warnings, a set of lambdas to inspect by
+#' hand (if there is not testTarget), or a message indicating the result of 
+#' comparison with the TestTarget.
+#' 
+#' @description This function is still under development and may well be buggy.
+#' Please file Issues in the GitHub repository describing the problems
+#' you encounter so I can work on those: 
+#' \url{https://github.com/levisc8/pdbDigitUtils/issues}.
+#' 
+#' @importFrom pander evals
+#' @importFrom rlang list2 env :=
+#' @importFrom RPadrino pdb_make_proto_ipm pdb_make_ipm
+#' @export
 #' 
 
-test_model <- function(pdb, ipm_id) {
+test_model <- function(pdb, id) {
   
+  out <- list()
+  errs <- data.frame(
+    ipm_id = id,
+    error  = NA_character_
+  )
+  
+  ev_env <- rlang::env(pdb = pdb, use_id = id)
+  
+  temp <- pander::evals(
+    "RPadrino::pdb_make_proto_ipm(pdb, ipm_id = use_id, det_stoch = 'det')",
+    env = ev_env
+  )
+  
+  if(!is.null(temp[[1]]$msg$errors) || 
+     !is.null(temp[[1]]$msg$warnings)) {
+    
+    msgs <- paste("Warnings found: ", temp[[1]]$msg$warnings, 
+                  "Errors found: ", temp[[1]]$msg$errors,
+                  sep = "; ")
+    
+    errs$error <- msgs
+  } 
+  
+  # If there's a proto_ipm result, we can try building it
+  if(!is.null(temp[[1]]$result)) {
+    
+    use_prot <- temp[[1]]$result
+    
+    make_args <- rlang::list2(!!id := list(iterate = TRUE,
+                                               iterations = 200))
+    
+    ev_env <- rlang::env(use_prot = use_prot,
+                         make_args = make_args)
+    
+    test_ipm <- pander::evals(
+      "RPadrino::pdb_make_ipm(use_prot, addl_args = make_args)",
+      env = ev_env
+    )
+    
+    
+    if(!is.null(test_ipm[[1]]$msg$errors) || 
+       !is.null(test_ipm[[1]]$msg$warnings)) {
+      
+      msgs <- paste(errs$error[!is.na(errs$error)],
+                    "IPM Build Warnings found: ", test_ipm[[1]]$msg$warnings, 
+                    "IPM Build Errors found: ", test_ipm[[1]]$msg$errors,
+                    sep = "; ")
+      
+      
+      errs$error <- msgs
+      
+      return(errs)
+      
+    } else if(!is.null(test_ipm[[1]]$result)) { # make_ipm success
+      
+      # Deterministic lambda only for now
+      
+      
+      if(id %in% pdb$TestTargets$ipm_id) {
+        
+        .compare_targets(test_ipm[[1]]$result, pdb, id, "lambda")
+        
+      } else {
+        
+        res <- lambda(test_ipm[[1]]$result, type_lambda = "last")
+        
+        out <- paste("No test target found, here are lambdas:\n ",
+                     paste(paste(names(res), res, sep = ": "), 
+                           collapse = "\n"))
+        
+        cat(out)
+        
+        return(out)
+        
+      }
+      
+      
+    }
+    
+  } else { # Proto IPM construction failure
+    
+    
+    return(errs)
+    
+  }
+  
+  
+  
+}
+
+#' @noRd
+#' @importFrom ipmr lambda
+
+.compare_targets <- function(ipm, pdb, ipm_id, fun) {
+  
+  ipm         <- ipm[[1]]
+      
+  target      <- pdb$TestTargets$target_value[pdb$TestTargets$ipm_id == ipm_id]
+  
+  target_prec <- pdb$TestTargets$precision[pdb$TestTargets$ipm_id == ipm_id]
+  
+  result      <- round(unlist(rlang::exec(fun, 
+                                          ipm, 
+                                          type_lambda = "last"), 
+                              use.names = FALSE),
+                       digits = target_prec)
+  
+  
+  if(length(unique(target_prec)) > 1) {
+    stop("Models with multiple test targets should all have the same 'precision' value.")
+  }
+  
+  target_prec <- unique(target_prec)
+  
+  test_res    <- isTRUE(all.equal(result, target, tolerance = 10 ^ (-target_prec)))
+  
+  if(test_res) {
+    "Test passed, model is ready :)"
+  } else {
+    paste("Test failed. Differences between targets: ",
+          paste(target - result, sep = "\n"))
+  }
   
 }

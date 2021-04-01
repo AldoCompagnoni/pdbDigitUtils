@@ -4,16 +4,21 @@
 \alias{test_model}
 \title{Test a newly entered model}
 \usage{
-test_model(pdb, ipm_id)
+test_model(pdb, id)
 }
 \arguments{
 \item{pdb}{The padrino database object}
 
-\item{ipm_id}{The \code{ipm_id} you wish to test}
+\item{id}{The \code{ipm_id} you wish to test}
 }
 \value{
-Either a list of errors and warnings, or a newly built IPM object.
+Either a data frame of errors and warnings, a set of lambdas to inspect by
+hand (if there is not testTarget), or a message indicating the result of
+comparison with the TestTarget.
 }
 \description{
-Test a newly entered model
+This function is still under development and may well be buggy.
+Please file Issues in the GitHub repository describing the problems
+you encounter so I can work on those:
+\url{https://github.com/levisc8/pdbDigitUtils/issues}.
 }

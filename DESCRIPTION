@@ -8,11 +8,18 @@ Authors@R:
            email = "levisc8@gmail.com")
 Description: Utility functions for Padrino Database Digitizers to test and debug models.
   This includes loading database objects from raw sheets.
+Depends: 
+  RPadrino
 Imports:
+  ipmr,
   pander, 
   readxl,
-  RPadrino
-License: MIT
+  rlang,
+  testthat,
+  writexl
+Suggests:
+  remotes
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
