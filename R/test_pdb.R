@@ -84,13 +84,19 @@ test_model <- function(pdb, id) {
         
       } else {
         
-        res <- lambda(test_ipm[[1]]$result, type_lambda = "last")
+        res <- lambda(test_ipm[[1]]$result[[1]], type_lambda = "last")
         
-        out <- paste("No test target found, here are lambdas:\n ",
+        res <- round(res, 4)
+        
+        if(!rlang::is_named(res)) {
+          names(res) <- paste("lambda_", seq(1, length(res), 1), sep = "")
+        }
+        
+        out <- paste("No test target found, here are lambdas:\n",
                      paste(paste(names(res), res, sep = ": "), 
                            collapse = "\n"))
         
-        cat(out)
+        class(out) <- "pdb_missing_target"
         
         return(out)
         
@@ -107,6 +113,19 @@ test_model <- function(pdb, id) {
   }
   
   
+  
+}
+
+#' @rdname test_model
+#' @param x Output from \code{test_model}
+#' @param ... Ignored
+#' @export
+
+print.pdb_missing_target <- function(x, ...) {
+  
+  cat(x)
+  
+  invisible(x)
   
 }
 

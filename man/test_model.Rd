@@ -2,14 +2,21 @@
 % Please edit documentation in R/test_pdb.R
 \name{test_model}
 \alias{test_model}
+\alias{print.pdb_missing_target}
 \title{Test a newly entered model}
 \usage{
 test_model(pdb, id)
+
+\method{print}{pdb_missing_target}(x, ...)
 }
 \arguments{
 \item{pdb}{The padrino database object}
 
 \item{id}{The \code{ipm_id} you wish to test}
+
+\item{x}{Output from \code{test_model}}
+
+\item{...}{Ignored}
 }
 \value{
 Either a data frame of errors and warnings, a set of lambdas to inspect by

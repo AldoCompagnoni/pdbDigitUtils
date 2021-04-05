@@ -21,6 +21,8 @@ read_pdb <- function(file) {
   
   names(out) <- sheets
   
+  class(out) <- c("pdb", "list")
+  
   return(out)
   
 }
