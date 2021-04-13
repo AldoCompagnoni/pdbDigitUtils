@@ -16,6 +16,7 @@ Imports:
   pander, 
   readxl,
   rlang,
+  taxize,
   testthat,
   writexl
 Suggests:

@@ -38,7 +38,7 @@ test_model <- function(pdb, id) {
     
     msgs <- paste("Warnings found: ", temp[[1]]$msg$warnings, 
                   "Errors found: ", temp[[1]]$msg$errors,
-                  sep = "; ")
+                  collapse = "; ")
     
     errs$error <- msgs
   } 
@@ -66,14 +66,16 @@ test_model <- function(pdb, id) {
       msgs <- paste(errs$error[!is.na(errs$error)],
                     "IPM Build Warnings found: ", test_ipm[[1]]$msg$warnings, 
                     "IPM Build Errors found: ", test_ipm[[1]]$msg$errors,
-                    sep = "; ")
+                    collapse = "; ")
       
       
       errs$error <- msgs
       
-      return(errs)
+      if(is.null(test_ipm[[1]]$result)) return(errs)
       
-    } else if(!is.null(test_ipm[[1]]$result)) { # make_ipm success
+    }
+    
+    if(!is.null(test_ipm[[1]]$result)) { # make_ipm success
       
       # Deterministic lambda only for now
       
