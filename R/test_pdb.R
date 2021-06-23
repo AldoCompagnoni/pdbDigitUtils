@@ -2,6 +2,7 @@
 #' 
 #' @param pdb The padrino database object
 #' @param id The \code{ipm_id} you wish to test
+#' @param iterations The number of iterations to run the model for.
 #'
 #' @return Either a data frame of errors and warnings, a set of lambdas to inspect by
 #' hand (if there is not testTarget), or a message indicating the result of 
@@ -18,7 +19,7 @@
 #' @export
 #' 
 
-test_model <- function(pdb, id) {
+test_model <- function(pdb, id, iterations = 100) {
   
   out <- list()
   errs <- data.frame(
@@ -49,7 +50,7 @@ test_model <- function(pdb, id) {
     use_prot <- temp[[1]]$result
     
     make_args <- rlang::list2(!!id := list(iterate = TRUE,
-                                               iterations = 200))
+                                           iterations = iterations))
     
     ev_env <- rlang::env(use_prot = use_prot,
                          make_args = make_args)

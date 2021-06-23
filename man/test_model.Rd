@@ -5,7 +5,7 @@
 \alias{print.pdb_missing_target}
 \title{Test a newly entered model}
 \usage{
-test_model(pdb, id)
+test_model(pdb, id, iterations = 100)
 
 \method{print}{pdb_missing_target}(x, ...)
 }
@@ -13,6 +13,8 @@ test_model(pdb, id)
 \item{pdb}{The padrino database object}
 
 \item{id}{The \code{ipm_id} you wish to test}
+
+\item{iterations}{The number of iterations to run the model for.}
 
 \item{x}{Output from \code{test_model}}
 
