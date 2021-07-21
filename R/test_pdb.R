@@ -150,10 +150,6 @@ print.pdb_missing_target <- function(x, ...) {
                        digits = target_prec)
   
   
-  if(length(unique(target_prec)) > 1) {
-    stop("Models with multiple test targets should all have the same 'precision' value.")
-  }
-  
   target_prec <- unique(target_prec)
   
   test_res    <- isTRUE(all.equal(result, target, tolerance = 10 ^ (-target_prec)))
