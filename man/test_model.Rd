@@ -5,7 +5,7 @@
 \alias{print.pdb_missing_target}
 \title{Test a newly entered model}
 \usage{
-test_model(pdb, id, iterations = 100)
+test_model(pdb, id, iterations = 100, tolerance = 2)
 
 \method{print}{pdb_missing_target}(x, ...)
 }
@@ -15,6 +15,13 @@ test_model(pdb, id, iterations = 100)
 \item{id}{The \code{ipm_id} you wish to test}
 
 \item{iterations}{The number of iterations to run the model for.}
+
+\item{tolerance}{The tolerance for differences between computed and stored
+target to be considered the same. This is calculated as
+\code{tolerance * 10^(-target_prec)}, where \code{target_prec} is usually
+2, but comes from Padrino itself. For example, \code{tolerance = 3} usually
+allows for computed lambda to be considered the same if it is within +/- 0.03
+of the target lambda value.}
 
 \item{x}{Output from \code{test_model}}
 

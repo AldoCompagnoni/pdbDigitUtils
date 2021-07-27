@@ -3,6 +3,12 @@
 #' @param pdb The padrino database object
 #' @param id The \code{ipm_id} you wish to test
 #' @param iterations The number of iterations to run the model for.
+#' @param tolerance The tolerance for differences between computed and stored
+#' target to be considered the same. This is calculated as 
+#' \code{tolerance * 10^(-target_prec)}, where \code{target_prec} is usually 
+#' 2, but comes from Padrino itself. For example, \code{tolerance = 3} usually
+#' allows for computed lambda to be considered the same if it is within +/- 0.03
+#' of the target lambda value. 
 #'
 #' @return Either a data frame of errors and warnings, a set of lambdas to inspect by
 #' hand (if there is not testTarget), or a message indicating the result of 
@@ -19,7 +25,7 @@
 #' @export
 #' 
 
-test_model <- function(pdb, id, iterations = 100) {
+test_model <- function(pdb, id, iterations = 100, tolerance = 2) {
   
   out <- list()
   errs <- data.frame(
@@ -83,7 +89,7 @@ test_model <- function(pdb, id, iterations = 100) {
       
       if(id %in% pdb$TestTargets$ipm_id) {
         
-        .compare_targets(test_ipm[[1]]$result, pdb, id, "lambda")
+        .compare_targets(test_ipm[[1]]$result, pdb, id, "lambda", tolerance)
         
       } else {
         
@@ -133,9 +139,17 @@ print.pdb_missing_target <- function(x, ...) {
 }
 
 #' @noRd
+
+`%between%` <- function(x, y) {
+  
+  x >= y[1] & x <= y[2]
+  
+}
+
+#' @noRd
 #' @importFrom ipmr lambda
 
-.compare_targets <- function(ipm, pdb, ipm_id, fun) {
+.compare_targets <- function(ipm, pdb, ipm_id, fun, tolerance) {
   
   ipm         <- ipm[[1]]
       
@@ -152,7 +166,10 @@ print.pdb_missing_target <- function(x, ...) {
   
   target_prec <- unique(target_prec)
   
-  test_res    <- isTRUE(all.equal(result, target, tolerance = 10 ^ (-target_prec)))
+  l_up <- target + (tolerance * 10 ^ (-target_prec))
+  l_lo <- target - (tolerance * 10 ^ (-target_prec))
+  
+  test_res <- result %between% c(l_lo, l_up)
   
   if(test_res) {
     "Test passed, model is ready :)"
