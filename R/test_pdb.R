@@ -169,9 +169,25 @@ print.pdb_missing_target <- function(x, ...) {
   l_up <- target + (tolerance * 10 ^ (-target_prec))
   l_lo <- target - (tolerance * 10 ^ (-target_prec))
   
-  test_res <- result %between% c(l_lo, l_up)
+  if(length(target) > 1 || length(result) > 1) {
+    
+    test_res <- vapply(seq_along(target), 
+                       function(i, lows, highs, results) {
+                         
+                         results[i] %between% c(lows[i], highs[i])
+                       },
+                       lows      = l_lo,
+                       highs     = l_up,
+                       results   = result,
+                       FUN.VALUE = logical(1L))
+    
+    
+  } else {
   
-  if(test_res) {
+    test_res <- result %between% c(l_lo, l_up)
+    
+  }
+  if(all(test_res)) {
     "Test passed, model is ready :)"
   } else {
     paste("Test failed. Differences between targets: ",
