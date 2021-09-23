@@ -22,6 +22,7 @@
 #' @importFrom pander evals
 #' @importFrom rlang list2 env :=
 #' @importFrom RPadrino pdb_make_proto_ipm pdb_make_ipm
+#' @importFrom magrittr %>%
 #' @export
 #' 
 

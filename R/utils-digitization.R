@@ -43,7 +43,7 @@ dms_deg <- function(degree, minutes = 0, seconds = 0,
 
 resolve_pdb_tax <- function(species_author) {
   
-  taxize::gnr_resolve(spp, 
+  taxize::gnr_resolve(species_author, 
                       data_source_ids = 1,
                       highestscore = FALSE)
   

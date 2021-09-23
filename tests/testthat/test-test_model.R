@@ -10,6 +10,9 @@ test_that("test_model returns correct strings when model is ready", {
 
 
 test_that("test_model returns correct values when missing targets", {
+   
+  baer_pdb$TestTargets <- subset(baer_pdb$TestTargets,
+                                 ipm_id != "aaa314")
   
   x <- test_model(baer_pdb, "aaa314")
   

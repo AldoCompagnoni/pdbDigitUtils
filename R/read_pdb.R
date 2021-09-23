@@ -41,3 +41,7 @@ write_pdb <- function(pdb, file) {
   invisible(file)
   
 }
+
+#' @importFrom utils globalVariables
+
+utils::globalVariables(".", "pdbDigitUtils", add = TRUE)
