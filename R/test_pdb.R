@@ -153,9 +153,12 @@ print.pdb_missing_target <- function(x, ...) {
   
   ipm         <- ipm[[1]]
       
-  target      <- pdb$TestTargets$target_value[pdb$TestTargets$ipm_id == ipm_id]
+  target      <- pdb$TestTargets$target_value[pdb$TestTargets$ipm_id == ipm_id] %>%
+    .[!is.na(.)]
   
-  target_prec <- pdb$TestTargets$precision[pdb$TestTargets$ipm_id == ipm_id]
+  target_prec <- pdb$TestTargets$precision[pdb$TestTargets$ipm_id == ipm_id] %>%
+    .[!is.na(.)] %>%
+    unique() 
   
   result      <- round(unlist(rlang::exec(fun, 
                                           ipm, 
@@ -164,7 +167,6 @@ print.pdb_missing_target <- function(x, ...) {
                        digits = target_prec)
   
   
-  target_prec <- unique(target_prec)
   
   l_up <- target + (tolerance * 10 ^ (-target_prec))
   l_lo <- target - (tolerance * 10 ^ (-target_prec))

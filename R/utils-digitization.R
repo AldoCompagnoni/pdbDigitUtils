@@ -19,7 +19,7 @@ dms_deg <- function(degree, minutes = 0, seconds = 0,
     stop("Latitude degrees cannot be greater than 90!")
   }
   
-  if(degree > 0) {
+  if(degree < 0) {
     stop("'degree' must be positive! Use 'dir' to control sign of output.")
   }
   
