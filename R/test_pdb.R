@@ -21,7 +21,7 @@
 #' 
 #' @importFrom pander evals
 #' @importFrom rlang list2 env :=
-#' @importFrom RPadrino pdb_make_proto_ipm pdb_make_ipm
+#' @importFrom Rpadrino pdb_make_proto_ipm pdb_make_ipm
 #' @importFrom magrittr %>%
 #' @export
 #' 
@@ -37,7 +37,7 @@ test_model <- function(pdb, id, iterations = 100, tolerance = 2) {
   ev_env <- rlang::env(pdb = pdb, use_id = id)
   
   temp <- pander::evals(
-    "RPadrino::pdb_make_proto_ipm(pdb, ipm_id = use_id, det_stoch = 'det')",
+    "Rpadrino::pdb_make_proto_ipm(pdb, ipm_id = use_id, det_stoch = 'det')",
     env = ev_env
   )
   
@@ -63,7 +63,7 @@ test_model <- function(pdb, id, iterations = 100, tolerance = 2) {
                          make_args = make_args)
     
     test_ipm <- pander::evals(
-      "RPadrino::pdb_make_ipm(use_prot, addl_args = make_args)",
+      "Rpadrino::pdb_make_ipm(use_prot, addl_args = make_args)",
       env = ev_env
     )
     
